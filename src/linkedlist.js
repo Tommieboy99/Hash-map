@@ -1,10 +1,9 @@
-export { LinkedList, Node };
+export { LinkedList };
 
 class LinkedList {
   constructor() {
     this.head = null;
     this.tail = null;
-    this._size = 0;
   }
 
   append(key, value) {
@@ -12,99 +11,113 @@ class LinkedList {
     if (!this.head) this.head = newNode;
     else this.tail.nextNode = newNode;
     this.tail = newNode;
-    this._size++;
   }
 
-  prepend(value) {
-    const newNode = new Node(value, this.head);
-    if (!this.head) this.tail = newNode;
-    this.head = newNode;
-    this._size++;
+  updateKeyValue(key, value) {
+    let current = this.head;
+
+    while (current) {
+      if (current.key === key) {
+        current.value = value;
+        return;
+      }
+      current = current.nextNode;
+    }
   }
 
-  get size() {
-    return this._size;
-  }
-
-  get listHead() {
-    return this.head;
-  }
-
-  get listTail() {
-    return this.tail;
-  }
-
-  at(index) {
-    let count = 0;
+  getValueOfKey(key) {
     let current = this.head;
 
     while (current !== null) {
-      if (index === count) {
-        return current;
-      }
-
-      count++;
+      if (current.key === key) return current.value;
       current = current.nextNode;
     }
 
     return null;
   }
 
-  pop() {
-    if (!this.head) return null;
-    if (!this.head.nextNode) {
-      this.head = null;
-      this.tail = null;
-    }
-
-    let current = this.head;
-
-    while (current.nextNode.nextNode) {
-      current = current.nextNode;
-    }
-
-    current.nextNode = null;
-    this.tail = current;
-  }
-
-  contains(value) {
+  doesKeyExist(key) {
     let current = this.head;
 
     while (current !== null) {
-      if (current.value === value) return true;
+      if (current.key === key) return true;
       current = current.nextNode;
     }
 
     return false;
   }
 
-  find(value) {
+  removeNode(key) {
+    let prev = null;
     let current = this.head;
-    let index = 0;
 
-    while (current !== null) {
-      if (current.value === value) return index;
-      index++;
+    while (current) {
+      if (current.key === key) {
+        if (!prev) this.head = current.nextNode;
+        else prev.nextNode = current.nextNode;
+        if (!current.nextNode) this.tail = prev;
+
+        return true;
+      }
+
+      prev = current;
       current = current.nextNode;
     }
 
-    return null;
+    return false;
   }
 
-  toString() {
-    let result = '';
+  clear() {
+    this.head = null;
+    this.tail = null;
+    this._size = 0;
+  }
+
+  getKeys() {
+    const keys = [];
+
     let current = this.head;
+
     while (current !== null) {
-      result += `( ${current.value} ) -> `;
+      keys.push(current.key);
       current = current.nextNode;
     }
-    result += 'null';
-    return result;
+
+    return keys;
+  }
+
+  getValues() {
+    const values = [];
+
+    let current = this.head;
+
+    while (current !== null) {
+      values.push(current.value);
+      current = current.nextNode;
+    }
+
+    return values;
+  }
+
+  getKeyValuePair() {
+    const pairs = [];
+
+    let current = this.head;
+
+    while (current !== null) {
+      pairs.push([current.key, current.value]);
+      current = current.nextNode;
+    }
+
+    return pairs;
   }
 }
 
 class Node {
-  constructor(key = null, value = null, nextNode = null) {
+  constructor(key, value = null, nextNode = null) {
+    if (key === undefined || key === null) {
+      throw new Error('Node key is required');
+    }
     this.key = key;
     this.value = value;
     this.nextNode = nextNode;
